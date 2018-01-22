@@ -32,17 +32,18 @@ def getChannels():
         if channel.source != None:
             channelThumb = channel.thumbnail
             # title = '[COLOR green]' + channel.name + '[/COLOR]'
-            title = channel.name
+            title = '[B]' + channel.name + '[/B]'
             descr = ""
             epgTitle = ""
             next_title = ""
             if str(channel.cid) in epg:
                 epgObj = epg[str(channel.cid)]
                 if epgObj != None:
-                    title += '[COLOR green]' + ' ( ' + epgObj.title + ' )' + '[/COLOR]'
+                    title += '[I]' + ' - " ' + epgObj.title + ' "' + '[/I]'
                     descr = epgObj.descr
                     epgTitle = epgObj.title
-                    next_title = 'Nastepnie: ' + '[COLOR green]' + epgObj.next_title + '[/COLOR]'
+                    next_title = 'Nastepnie: ' + '[B]' + epgObj.next_title + '[/B]\n'
+                    next_title += 'Teraz: ' + '[B]' + epgObj.title + '[/B]'
             list_item = xbmcgui.ListItem(label=title, thumbnailImage=channelThumb)
             list_item.setProperty('fanart_image', channelThumb)
             list_item.setInfo('video', {'title': title, 'genre': channel.genre, 'plot': next_title + '\n' + descr, 'plotoutline ': epgTitle, 'originaltitle' :epgTitle})
