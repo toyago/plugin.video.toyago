@@ -73,5 +73,6 @@ def router(paramstring):
     else:
         getChannels()
 
+
 if __name__ == '__main__':
     router(sys.argv[2][1:])
