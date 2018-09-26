@@ -9,7 +9,6 @@ import SocketServer
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import toyago
 import playlist
-import model
 import uuid
 
 addon = xbmcaddon.Addon()
@@ -27,13 +26,12 @@ if deviceid == "":
     deviceid = randomdev
 
 API = toyago.GetInstance(deviceid, user, password)
-
 server = None;
 
 class MyHandler(BaseHTTPRequestHandler):
     global server;
     def do_GET(self):
-        #try:
+        try:
             if 'playlist' in self.path:
                 cids = []
                 count = 0
@@ -41,7 +39,8 @@ class MyHandler(BaseHTTPRequestHandler):
                 playlistManager = playlist.Playlist("ToyaGo")
                 for channel in channels:
                     count += 1
-                    playlistManager.addM3UChannel(count, channel.name, channel.thumbnail, channel.name, channel.name, channel.source)
+                    if channel.source != None:
+                        playlistManager.addM3UChannel(count, channel.name, channel.thumbnail, channel.name, channel.name, channel.source)
                 m3u = playlistManager.getM3UList()
                 self.send_response(200)
                 self.send_header('Content-type', 'application/x-mpegURL')
@@ -50,12 +49,8 @@ class MyHandler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(m3u.encode('utf-8'))
                 self.finish()
-
-
-                xbmcgui.Dialog().notification("TV Service", str(i), xbmcgui.NOTIFICATION_ERROR);
-
-        #except Exception as e:
-            #xbmcgui.Dialog().notification("TV Service", "Exception", xbmcgui.NOTIFICATION_ERROR);
+        except Exception as e:
+            xbmcgui.Dialog().notification("ToyaGO PVR", str(e), xbmcgui.NOTIFICATION_ERROR);
 
 
 class AsyncCall(object):
