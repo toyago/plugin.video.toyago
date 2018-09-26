@@ -1,21 +1,18 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
-	<!--<category label="PVR Server - beta">
-		<setting id="server_enable" type="bool" default="true" label="Server Enable"/>
-		<setting id="server_port" type="number" default="8899" label="Port" visible="eq(-1,true)"/>
-		<setting type="sep"/>
-		<setting label="Start Server" type="action" visible="eq(-3,true)" action="XBMC.RunPlugin(plugin://plugin.video.pierwszatv/?action=startServer)"/>
-    <setting label="Stop Server" type="action" visible="eq(-4,true)" action="XBMC.RunPlugin(plugin://plugin.video.pierwszatv/?action=stopServer)"/>
-		<setting type="sep"/>
-		<setting id="startup_delay" type="hiden" default="0" label="Startup Delay" visible="eq(-6,true)"/>
-	</category>
-	<category label="Video Addon">
-
-	</category>-->
 	<category label="ToyaGO">
 		<setting id="toya_go_sort" type="enum" values="Default|Alphabetical" label="Sorting" default="0"/>
 		<setting id="toya_go_user" type="text" default="" label="Email"/>
 		<setting id="toya_go_pass" type="text" default="" label="Password"/>
 		<setting id="toya_go_device" type="text" default="" label="DeviceID (optional)"/>
+	</category>
+	<category label="PVR Server">
+		<setting id="server_enable" type="bool" default="true" label="Server Enable"/>
+		<setting id="server_port" type="number" default="8899" label="Port" visible="eq(-1,true)"/>
+		<setting type="sep"/>
+		<setting label="Start Server" type="action" visible="eq(-3,true)" action="XBMC.RunPlugin(plugin://plugin.video.toyago/?action=startServer)"/>
+		<setting label="Stop Server" type="action" visible="eq(-4,true)" action="XBMC.RunPlugin(plugin://plugin.video.toyago/?action=stopServer)"/>
+		<setting type="sep"/>
+		<setting id="startup_delay" type="hiden" default="0" label="Startup Delay" visible="eq(-6,true)"/>
 	</category>
 </settings>

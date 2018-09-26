@@ -9,6 +9,7 @@ provider-name="piotrekcrash">
 <extension point="xbmc.python.pluginsource" library="main.py">
   <provides>video</provides>
 </extension>
+<extension point="xbmc.service" library="service.py" start="startup" />
 <extension point="xbmc.addon.metadata">
   <summary lang="en">ToyaGO Kodi Video Plugin</summary>
   <description lang="en">Addon daje możliwość oglądania kanałów dostępnych w usłudze ToyaGo zalogowanemu użytkownikowi zgodnie z wykupionym pakietem</description>
