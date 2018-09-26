@@ -38,9 +38,9 @@ class MyHandler(BaseHTTPRequestHandler):
                 channels = API.channels(cids)
                 playlistManager = playlist.Playlist("ToyaGo")
                 for channel in channels:
-                    count += 1
                     if channel.source != None:
-                        playlistManager.addM3UChannel(count, channel.name, channel.thumbnail, channel.name, channel.name, channel.source)
+                        count += 1
+                        playlistManager.addM3UChannel(count, channel.name, channel.thumbnail, channel.genre, channel.name, channel.source)
                 m3u = playlistManager.getM3UList()
                 self.send_response(200)
                 self.send_header('Content-type', 'application/x-mpegURL')
@@ -49,6 +49,31 @@ class MyHandler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(m3u.encode('utf-8'))
                 self.finish()
+
+            elif 'epg' in self.path:
+                self.send_response(301)
+                self.send_header('Location', 'https://raw.githubusercontent.com/piotrekcrash/xmltvEpg/master/epg.xml')
+                self.end_headers()
+                self.finish()
+
+            elif 'stop' in self.path:
+                msg = 'Stopping ...'
+                self.send_response(200)
+                self.send_header('Content-type', 'text/html')
+                self.send_header('Connection', 'close')
+                self.send_header('Content-Length', len(msg))
+                self.end_headers()
+                self.wfile.write(msg.encode('utf-8'))
+                server.socket.close()
+
+            elif 'online' in self.path:
+                msg = 'Yes. I am.'
+                self.send_response(200)
+                self.send_header('Content-type', 'text/html')
+                self.send_header('Connection', 'close')
+                self.send_header('Content-Length', len(msg))
+                self.end_headers()
+                self.wfile.write(msg.encode('utf-8'))
         except Exception as e:
             xbmcgui.Dialog().notification("ToyaGO PVR", str(e), xbmcgui.NOTIFICATION_ERROR);
 
@@ -99,14 +124,14 @@ def Async(fnc=None, callback=None):
 def startServer():
     global server;
     server_enable = addon.getSetting('server_enable');
-    port = int(addon.getSetting('server_port'));
-    try:
-        server = SocketServer.TCPServer(('', port), MyHandler);
-        server.serve_forever();
-
-    except KeyboardInterrupt:
-        if server != None:
-            server.socket.close();
+    if server_enable == 'true':
+        port = int(addon.getSetting('server_port'));
+        try:
+            server = SocketServer.TCPServer(('', port), MyHandler);
+            server.serve_forever();
+        except KeyboardInterrupt:
+            if server != None:
+                server.socket.close();
 
 
 def stopServer():
@@ -115,7 +140,7 @@ def stopServer():
         url = urllib.urlopen('http://localhost:' + str(port) + '/stop');
         code = url.getcode();
     except Exception as e:
-        return;
+        xbmcgui.Dialog().notification("ToyaGO PVR", str(e), xbmcgui.NOTIFICATION_ERROR);
     return;
 
 

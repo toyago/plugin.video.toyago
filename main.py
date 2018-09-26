@@ -4,7 +4,9 @@ import xbmcgui
 import xbmcaddon
 import xbmcplugin
 import toyago
+import service
 import uuid
+import time
 
 addon = xbmcaddon.Addon()
 _url = sys.argv[0]
@@ -14,6 +16,7 @@ user = addon.getSetting('toya_go_user');
 password = addon.getSetting('toya_go_pass');
 sortType = addon.getSetting('toya_go_sort');
 deviceid = addon.getSetting('toya_go_device')
+addonname = addon.getAddonInfo('name')
 if deviceid == "":
     randomdev = str(uuid.uuid4().get_hex().upper()[0:10])
     addon.setSetting('toya_go_device', randomdev)
@@ -46,7 +49,8 @@ def getChannels():
                     next_title += 'Teraz: ' + '[B]' + epgObj.title + '[/B]'
             list_item = xbmcgui.ListItem(label=title, thumbnailImage=channelThumb)
             list_item.setProperty('fanart_image', channelThumb)
-            list_item.setInfo('video', {'title': title, 'genre': channel.genre, 'plot': next_title + '\n' + descr, 'plotoutline ': epgTitle, 'originaltitle' :epgTitle})
+            list_item.setInfo('video', {'title': title, 'genre': channel.genre, 'plot': next_title + '\n' + descr,
+                                        'plotoutline ': epgTitle, 'originaltitle': epgTitle})
             list_item.setArt({'landscape': channelThumb})
             list_item.setProperty('IsPlayable', 'true')
             url = '{0}?action=play&video={1}'.format(_url, channel.source)
@@ -70,8 +74,35 @@ def router(paramstring):
             print('listing')
         elif params['action'] == 'play':
             play_video(params['video'])
+        elif params['action'] == 'stopServer':
+            stopServer()
+        elif params['action'] == 'startServer':
+            startServer()
     else:
         getChannels()
+
+
+def startServer():
+    port = addon.getSetting('server_port');
+    if service.serverOnline():
+        xbmcgui.Dialog().notification(addonname, 'Server already started. Port: ' + str(port),
+                                      xbmcgui.NOTIFICATION_INFO);
+    else:
+        service.startServer();
+        time.sleep(5);
+        if service.serverOnline():
+            xbmcgui.Dialog().notification(addonname, 'Server started. Port: ' + str(port), xbmcgui.NOTIFICATION_INFO);
+        else:
+            xbmcgui.Dialog().notification(addonname, 'Server not started. Wait one moment and try again. ', xbmcgui.NOTIFICATION_ERROR);
+
+
+def stopServer():
+    if service.serverOnline():
+        service.stopServer()
+        time.sleep(5);
+        xbmcgui.Dialog().notification(addonname, 'Server stopped.', xbmcgui.NOTIFICATION_INFO);
+    else:
+        xbmcgui.Dialog().notification(addonname, 'Server is already stopped.', xbmcgui.NOTIFICATION_INFO);
 
 
 if __name__ == '__main__':
