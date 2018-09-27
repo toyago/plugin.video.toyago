@@ -9,6 +9,8 @@ getAuth = 'toyago.GetAuth'
 getChannels = 'toyago.GetProducts'
 setVersion = 'toyago.SetVersion'
 getEpg = 'toyago.GetEPGpf'
+getChannel = 'toyago.GetObjects'
+serviceTv = 'GOTV'
 
 # toyaDate = '"%Y-%m-%dT%H:%M:%S.%fZ"'
 
@@ -73,9 +75,36 @@ class Request:
         self.addBooleanVal('true', params)
         self.addStrVal(token, params)
         methodCall.appendChild(params)
-        # xml_str = self.doc.toprettyxml(encoding="utf-8")
-        xml_str = self.doc.toxml(encoding="utf-8")
-        # print(xml_str)
+        xml_str = self.doc.toprettyxml(encoding="utf-8")
+        # xml_str = self.doc.toxml(encoding="utf-8")
+        print('ToyaGo getChannels xml request')
+        print(xml_str)
+        return xml_str
+
+    def getChannel(self, token, deviceId, productId, number):
+        prodId = 'products.id=' + str(productId)
+        self.doc = minidom.Document()
+        methodCall = self.doc.createElement("methodCall")
+        self.doc.appendChild(methodCall)
+        methodName = self.doc.createElement("methodName")
+        methodName.appendChild(self.doc.createTextNode(getChannel))
+        methodCall.appendChild(methodName)
+        params = self.doc.createElement("params")
+        self.addStrVal(deviceId, params)
+        self.addI4Val(str(number), params)
+        # self.addStrVal(serviceTv, params)
+        self.addArrayVal([prodId], params)
+        self.addI4Val('1', params)
+        self.addI4Val('0', params)
+        self.addArrayVal(['0'], params)
+        self.addI4Val('0', params)
+        self.addBooleanVal('true', params)
+        self.addStrVal(token, params)
+        methodCall.appendChild(params)
+        xml_str = self.doc.toprettyxml(encoding="utf-8")
+        # xml_str = self.doc.toxml(encoding="utf-8")
+        print('ToyaGo getChannel xml request')
+        print(xml_str)
         return xml_str
 
     def getEPG(self, token, deviceId, cids):
@@ -202,6 +231,8 @@ class Response:
 
 
     def parseChannels(self, toyaResp, cids):
+        print('ToyaGo getChannels xml response')
+        print(str(toyaResp))
 
         channelsResp = parseString(str(toyaResp))
         members = channelsResp.getElementsByTagName("member")
