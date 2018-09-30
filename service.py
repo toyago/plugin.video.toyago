@@ -157,4 +157,5 @@ def serverOnline():
 
 
 if __name__ == '__main__':
+    API.keepSession();
     startServer();

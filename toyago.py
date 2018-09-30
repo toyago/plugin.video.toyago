@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 import client, xmlCommon
+import threading
+from datetime import datetime, timedelta
+import time
 
 apiUrl = 'https://api-go.toya.net.pl/toyago/index.php'
 
@@ -32,12 +35,14 @@ class GetInstance:
         # print(channelsResp)
         channels = self.xmlResp.parseChannels(channelsResp, cids)
         #for channel in channels:
-        for i in range(1111173, 1111273):
-            #   print('serviceId ' + str(i))
-            #    print('cid ' + str(channel.cid))
-            self.channel(i, 0)
-            i += 1
-            # break
+        #for i in range(1111173, 1111174):
+        #   self.channel(i, 0, 0)
+        #    for j in range(0, 1):
+        #        for k in range(0, 100):
+        #            self.channel(i, j, k)
+        #   print('serviceId ' + str(i))
+        #    print('cid ' + str(channel.cid))
+        # break
         return channels
 
     def epg(self, cids, epg):
@@ -48,11 +53,14 @@ class GetInstance:
         # print(epgResp)
         self.xmlResp.parseEPG(epgResp, epg)
 
-    def channel(self, cid, number):
-        channelReq = self.xmlReq.getChannel(self.token, self.deviceId, cid, number)
+    def channel(self, cid, number, parent):
+        cid2 = str(cid).replace('1111', '')
+        channelReq = self.xmlReq.getChannel(self.token, self.deviceId, cid2, number, parent)
         channelResp = client.request(apiUrl, channelReq)
-        print('ToyaGo getChannel xml response 1: ' + str(cid) + ' ' + str(number))
+
+        print('ToyaGo getChannel xml response 1: ' + str(cid2) + ' ' + str(number))
         print(channelResp)
+
         # cid2 = cid.replace('1111', '')
         # channelReq2 = self.xmlReq.getChannel(self.token, self.deviceId, cid2, number)
         # channelResp2 = client.request(apiUrl, channelReq2)
@@ -62,6 +70,23 @@ class GetInstance:
         # channelResp3 = client.request(apiUrl, channelReq3)
         # print('ToyaGo getChannel xml response 3: ' + str(cid) + ' ' + str(number))
         # print(channelResp3)
+
+    def keepSession(self):
+        threading.Thread(target=self.refreshAuth, args=(1,)).start()
+
+    def refreshAuth(self, expire):
+        active = True
+        now = datetime.now()
+        nextRefresh = now + timedelta(minutes=expire)
+        while active:
+            time.sleep(1)
+            now = datetime.now()
+            deltaSeconds = (nextRefresh - now).seconds
+            if deltaSeconds <= 0:
+                print('ToyaGo Auth Refreshed')
+                self.auth()
+                nextRefresh = now + timedelta(minutes=expire)
+
 
 
 if __name__ == "__main__":

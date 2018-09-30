@@ -75,13 +75,13 @@ class Request:
         self.addBooleanVal('true', params)
         self.addStrVal(token, params)
         methodCall.appendChild(params)
-        xml_str = self.doc.toprettyxml(encoding="utf-8")
-        # xml_str = self.doc.toxml(encoding="utf-8")
-        print('ToyaGo getChannels xml request')
-        print(xml_str)
+        # xml_str = self.doc.toprettyxml(encoding="utf-8")
+        xml_str = self.doc.toxml(encoding="utf-8")
+        # print('ToyaGo getChannels xml request')
+        # print(xml_str)
         return xml_str
 
-    def getChannel(self, token, deviceId, productId, number):
+    def getChannel(self, token, deviceId, productId, number, parent):
         prodId = 'products.id=' + str(productId)
         self.doc = minidom.Document()
         methodCall = self.doc.createElement("methodCall")
@@ -97,7 +97,7 @@ class Request:
         self.addI4Val('1', params)
         self.addI4Val('0', params)
         self.addArrayVal(['0'], params)
-        self.addI4Val('0', params)
+        self.addI4Val(str(parent), params)
         self.addBooleanVal('true', params)
         self.addStrVal(token, params)
         methodCall.appendChild(params)
@@ -231,8 +231,8 @@ class Response:
 
 
     def parseChannels(self, toyaResp, cids):
-        print('ToyaGo getChannels xml response')
-        print(str(toyaResp))
+        # print('ToyaGo getChannels xml response')
+        # print(str(toyaResp))
 
         channelsResp = parseString(str(toyaResp))
         members = channelsResp.getElementsByTagName("member")
